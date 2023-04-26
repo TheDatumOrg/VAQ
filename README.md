@@ -1,4 +1,4 @@
-# BitVecEngine
+# Fast Adaptive Similarity Search through Variance‑Aware Quantization
 
 # Requirements
 - CMake 3.13 or newer
