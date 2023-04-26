@@ -1,0 +1,136 @@
+#############################################
+#############################################
+############### Source Codes ################
+#############################################
+#############################################
+
+- Variance-Aware Quantization
+  Library used:
+    - Eigen by Gael Guennebaud, Benoit Jacob, and others. http://eigen.tuxfamily.org/
+    - Armadillo by Conrad Sanderson and Ryan Curtin. http://arma.sourceforge.net/
+      (1) Armadillo: a template-based C++ library for linear algebra.
+          Journal of Open Source Software, Vol. 1, pp. 26, 2016.
+      (2) A User-Friendly Hybrid Sparse Matrix Class in C++.
+          Lecture Notes in Computer Science (LNCS), Vol. 10931, pp. 422-430, 2018.
+    - GNU Linear Programming Kit (GLPK). https://www.gnu.org/software/glpk/
+    - LAPACK and the BLAS. http://www.netlib.org/lapack/ & http://www.netlib.org/blas/
+      Blackford, L.S. et al., 2002. An updated set of basic linear algebra subprograms (BLAS).
+      ACM Transactions on Mathematical Software, 28(2), pp.135–151.
+
+- PQ Fast Scan code created by F. André, A.-M. Kermarrec, and N. Le Scouarnec.
+  from "Cache locality is not enough: High-Performance Nearest Neighbor Search with Product Quantization"
+  In 42nd International Conference on Very Large Data Bases, vol. 9, no. 4, p. 12. 2016.
+  URL: https://github.com/technicolor-research/pq-fast-scan
+
+- LSH + ITQ, PQ, OPQ, and HNSW use Faiss library by Facebook AI Research.
+  from "Billion-scale similarity search with GPUs"
+  IEEE Transactions on Big Data (2019).
+  URL: https://github.com/facebookresearch/faiss
+
+- Bolt code created by D Blalock.
+  from "Bolt: Accelerated Data Mining with Fast Vector Compression"
+  In Proceedings of the 23rd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining, pp. 727-735. 2017.
+  URL: https://github.com/dblalock/bolt
+
+- DS-Tree & iSAX2+ code created by Karima Echihabi.
+  from "Return of the Lernaean Hydra: Experimental Evaluation of Data Series Approximate Similarity Search"
+  arXiv preprint arXiv:2006.11459 (2020). (VLDB 2019)
+  URL: https://github.com/karimaechihabi/lernaean-hydra
+
+#############################################
+#############################################
+########## Experimental Parameters ##########
+#############################################
+#############################################
+
+=== 1M (Million) Datasets :: Experiments ===
+
+Figure 5
+
+- Comparison of VAQ against PQ, OPQ, and ITQ-LSH
+  SIFT (128 dimensions):
+    PQ - 256 bit budget, 32 segments, 8 bits per segment
+    OPQ - 256 bit budget, 32 segments, 8 bits per segment, 50 OPQ iterations
+    ITQ+LSH - 256 bit budget, 50 ITQ iterations
+    VAQ - 256 bit budget, 32 segments, min 2 & max 13 bits per segment, 1000 triangle inequality clusters, 16 segments TI centroids, visit 25% clusters
+  SEISMIC (256 dimensions):
+    PQ - 128 bit budget, 16 segments, 8 bits per segment
+    OPQ - 128 bit budget, 16 segments, 8 bits per segment, 50 OPQ iterations
+    ITQ+LSH - 256 bit budget, 50 ITQ iterations
+    VAQ - 128 bit budget, 16 segments, min 1 & max 12 bits per segment, 100 triangle inequality clusters, 8 segments TI centroids, visit 10% clusters
+  SALD (128 dimensions):
+    PQ - 256 bit budget, 32 segments, 8 bits per segment
+    OPQ - 256 bit budget, 32 segments, 8 bits per segment, 50 OPQ iterations
+    ITQ+LSH - 128 bit budget, 50 ITQ iterations
+    VAQ - 256 bit budget, 64 segments, min 1 & max 9 bits per segment, 1000 triangle inequality clusters, 32 segments TI centroids, visit 10% clusters
+  DEEP (96 dimensions)
+    PQ - 256 bit budget, 32 segments, 8 bits per segment
+    OPQ - 256 bit budget, 32 segments, 8 bits per segment, 50 OPQ iterations
+    ITQ+LSH - 96 bit budget, 50 ITQ iterations
+    VAQ - 256 bit budget, 32 segments, min 5 & max 12 bits per segment, 1000 triangle inequality clusters, 16 segments TI centroids, visit 25% clusters
+  ASTRO (256 dimensions)
+    PQ - 128 bit budget, 16 segments, 8 bits per segment
+    OPQ - 128 bit budget, 16 segments, 8 bits per segment, 50 OPQ iterations
+    ITQ+LSH - 256 bit budget, 50 ITQ iterations
+    VAQ - 128 bit budget, 16 segments, min 7 & max 9 bits per segment, 1000 triangle inequality clusters, 16 segments TI centroids, visit 10% clusters
+
+Figure 6
+
+- Evaluation of early abandoning (EA) and triangle inequality (TI) during query execution
+  Using VAQ 256 bit budget, 32 segments, min 7 & max 10 bits per segment, 16 segments TI centroids
+
+Figure 7
+
+- Comparison of VAQ against hardware-accelerated quantization methods, Bolt and PQFastScan
+  Bolt/PQFastScan use 256 bit budget, 64 segments
+  For VAQ:
+    SIFT - 256 bit budget, 64 segments, min 1 & max 8 bits per segment, 1000 triangle inequality clusters, 32 segments TI centroids, visit 2.5% clusters
+    SEISMIC - 256 bit budget, 32 segments, min 7 & max 13 bits per segment, 100 triangle inequality clusters, 16 segments TI centroids, visit 5% clusters
+    SALD - 256 bit budget, 64 segments, min 1 & max 9 bits per segment, 1000 triangle inequality clusters, 32 segments TI centroids, visit 2.5% clusters
+    DEEP - 256 bit budget, 32 segments, min 3 & max 7 bits per segment, 1000 triangle inequality clusters, 32 segments TI centroids, visit 2.5% clusters
+    ASTRO - 256 bit budget, 32 segments, min 4 & max 10 bits per segment, 2000 triangle inequality clusters, 32 segments TI centroids, visit 2.5% clusters
+
+Figure 10
+
+- Comparison of VAQ against graph-based methods for similarity search
+  SIFT
+    HNSW - 32 number of links, 20 ef-construction, 16 ef-search
+    VAQ - 256 bit budget, 64 segments, min 1 & max 8 bits per segment, 100 & 200 & 400 refinement
+  SEISMIC
+    HNSW - 32 number of links, 20 ef-construction, 16 ef-search
+    VAQ - 128 bit budget, 32 segments, min 2 & max 8 bits per segment, 100 & 200 & 400 refinement
+  SALD
+    HNSW - 32 number of links, 20 ef-construction, 16 ef-search
+    VAQ - 256 bit budget, 64 segments, min 1 & max 8 bits per segment, 100 & 200 & 400 refinement
+  DEEP
+    HNSW - 32 number of links, 20 ef-construction, 16 ef-search
+    VAQ - 256 bit budget, 64 segments, min 3 & max 7 bits per segment, 100 & 200 & 400 refinement
+  SIFT
+    HNSW - 32 number of links, 20 ef-construction, 16 ef-search
+    VAQ - 256 bit budget, 64 segments, min 1 & max 6 bits per segment, 100 & 200 & 400 refinement
+
+=== 100M (Million) Datasets :: Experiments ===
+
+Figure 11.a
+
+- Evaluation on DEEP dataset
+  OPQ - 256 bit budget, 32 segments, 8 bits per segment, 50 OPQ iterations, from 100 to 1000 refinement
+  OPQ + IMI2x1 - 256 bit budget, 32 segments, 8 bits per segment, 50 OPQ iterations, from 100 to 2000 refinement
+  OPQ + IMI2x2 - 256 bit budget, 32 segments, 8 bits per segment, 50 OPQ iterations, from 100 to 1000 refinement
+  iSAX2+ NG - 100.000 leaf size, from 100 to 4000 nprobes
+  iSAX2+ Epsilon - 100.000 leaf size, from 100 to 20 epsilon value
+  DS-Tree NG - 100.000 leaf size, from 50 to 1000 nprobes
+  DS-Tree Epsilon - 100.000 leaf size, from 100 to 20 epsilon value
+  VAQ - 256 bit budget, 32 segments, min 5 & max 12 bits per segment, 1000 triangle inequality clusters, 16 segments TI centroids, visit (25, 10, and 5)% clusters, from 100 to 500 refinement
+
+Figure 11.b
+
+- Evaluation on SALD dataset
+  OPQ - 256 bit budget, 32 segments, 8 bits per segment, 50 OPQ iterations, from 100 to 600 refinement
+  OPQ + IMI2x1 - 256 bit budget, 32 segments, 8 bits per segment, 50 OPQ iterations, from 100 to 4000 refinement
+  OPQ + IMI2x2 - 256 bit budget, 32 segments, 8 bits per segment, 50 OPQ iterations, from 100 to 1000 refinement
+  iSAX2+ NG - 100.000 leaf size, from 1 to 100 nprobes
+  iSAX2+ Epsilon - 100.000 leaf size, from 2000 to 10 epsilon value
+  DS-Tree NG - 100.000 leaf size, from 1 to 100 nprobes
+  DS-Tree Epsilon - 100.000 leaf size, from 2000 to 10 epsilon value
+  VAQ - 256 bit budget, 32 segments, min 4 & max 15 bits per segment, 1000 triangle inequality clusters, 16 segments TI centroids, visit (25, 10, and 5)% clusters, from 100 to 600 refinement
